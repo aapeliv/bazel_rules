@@ -4,7 +4,8 @@
  *
  * Copyright (c) 2016, Johan Mabille, Sylvain Corlay and Wolf Vollprecht
  * Copyright (c) 2016, QuantStack
- * All rights reserved.
+ *
+ * Licensed under BSD 3-Clause License.
  *
  */
 

@@ -2,4 +2,4 @@
 
 This repo contains a bunch of rules for building random bits and pieces with bazel.
 
-Hopefully these are useful for some.
+Hopefully these are useful for someone.
