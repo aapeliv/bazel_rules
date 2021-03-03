@@ -1,0 +1,75 @@
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "rules_foreign_cc",
+    url = "https://github.com/bazelbuild/rules_foreign_cc/archive/d54c78ab86b40770ee19f0949db9d74a831ab9f0.zip",
+    sha256 = "3c6445404e9e5d17fa0ecdef61be00dd93b20222c11f45e146a98c0a3f67defa",
+    strip_prefix = "rules_foreign_cc-d54c78ab86b40770ee19f0949db9d74a831ab9f0",
+)
+
+load("@rules_foreign_cc//:workspace_definitions.bzl", "rules_foreign_cc_dependencies")
+rules_foreign_cc_dependencies()
+
+# openssl
+
+http_archive(
+    name = "openssl",
+    build_file = "//:openssl.BUILD",
+    strip_prefix = "openssl-OpenSSL_1_1_1j",
+    url = "https://github.com/openssl/openssl/archive/OpenSSL_1_1_1j.tar.gz",
+    sha256 = "22d6588e4a7c5ad48fcac2fbf1d035bd43258c22a49457dad0539ded0651b4d2"
+)
+
+# postgres
+
+http_archive(
+    name = "postgres",
+    build_file = "//:postgres.BUILD",
+    strip_prefix = "postgresql-13.2",
+    url = "https://ftp.postgresql.org/pub/source/v13.2/postgresql-13.2.tar.gz",
+    sha256 = "3386a40736332aceb055c7c9012ecc665188536d874d967fcc5a33e7992f8080",
+)
+
+# docker
+
+http_archive(
+    name = "io_bazel_rules_docker",
+    sha256 = "1698624e878b0607052ae6131aa216d45ebb63871ec497f26c67455b34119c80",
+    strip_prefix = "rules_docker-0.15.0",
+    urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.15.0/rules_docker-v0.15.0.tar.gz"],
+)
+
+# for running locally with `bazel run ...`
+
+load("@io_bazel_rules_docker//toolchains/docker:toolchain.bzl", docker_toolchain_configure="toolchain_configure")
+
+docker_toolchain_configure(
+  name = "docker_config",
+  docker_flags = [
+    "--log-level=info",
+  ],
+)
+
+load("@io_bazel_rules_docker//repositories:repositories.bzl", container_repositories = "repositories")
+
+container_repositories()
+
+load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
+
+container_deps()
+
+load("@io_bazel_rules_docker//cc:image.bzl", _cc_image_repos = "repositories")
+
+_cc_image_repos()
+
+load(
+    "@io_bazel_rules_docker//container:container.bzl",
+    "container_pull",
+)
+
+container_pull(
+    name="cc-deb",
+    registry = "gcr.io",
+    repository = "distroless/cc-debian10",
+    digest = "sha256:456265daed2374f56017c516b2abbf26322959165fa146f101481a3fb7cb5f03",
+)
